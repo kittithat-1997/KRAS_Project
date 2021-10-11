@@ -1,0 +1,52 @@
+---
+title: "Untitled"
+author: "KRAS2"
+date: "10/4/2021"
+output: html_document
+---
+
+```{r, warning=FALSE, message=FALSE}
+library(epicalc)
+library(tidyverse)
+library(readxl)
+
+Sys.setlocale("LC_CTYPE", "thai")
+options(encoding="UTF-8")
+```
+
+```{r}
+library(readr)
+raw_data <- read_csv("~/GitHub/KRAS_Project/Data/raw data.csv")
+nanostring_data <- read_csv("~/GitHub/KRAS_Project/Data/nanostring data.csv")
+high_risk_KRAS_csv <- read_csv("~/GitHub/KRAS_Project/Data/high risk KRAS_csv.csv")
+colnames(data)
+```
+
+```{r}
+colnames(raw_data)
+head(raw_data$hn)
+raw_data[46,]
+raw_data$hn[46] <- "52-755702"
+raw_data$hn[46]
+```
+
+```{r}
+colnames(nanostring_data)
+sum(is.na(nanostring_data$cancer_date_dx1)) # 2 dx date are missing 
+head(nanostring_data$HN)
+```
+
+```{r}
+nanostring_data <- nanostring_data[,c(2,8,9)] # use HN for merging, rename to hn later
+head(nanostring_data)
+sum(is.na(nanostring_data$HN)) # No row with missing HN
+colnames(nanostring_data)[1] <- "hn"
+```
+
+```{r}
+data2 <- merge(data, data.rcp, by.x = "hn") # Add onset date  merging
+sum(is.na(data2$cancer_date_dx1)) # Still 2 missing
+date.dx <- as.Date(data2$cancer_date_dx1) # Transform to date format
+data2$`date of diagnosis` <- date.dx
+sum(is.na(data2$`date of diagnosis`)) # 2 NAs
+```
